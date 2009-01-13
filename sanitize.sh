@@ -18,21 +18,18 @@
 #
 # If you want to extend the list of bad characters, make sure you keep the
 # regexes in sync!
-#
-# Single and double quotes are included twice in the regexes
-# for not confusing the vim syntax highlighting :(
 
 # replace all bad characters by underscores
 function sanitize(name)
 {
-    gsub(/[][)(><:, ''""]/, "_", name);
+    gsub(/[][)(><:, '"]/, "_", name);
     return name;
 }
 
 # escape all double quotes
 function escape(name)
 {
-    gsub(/[""]/, "\\\"", name);
+    gsub(/["]/, "\\\"", name);
     return name;
 }
 
@@ -43,7 +40,7 @@ BEGIN {
 }
 
 # only process filenames containing bad characters
-$NF~/[][)(><:, ''""]/ {
+$NF~/[][)(><:, '"]/ {
     # Assume that all directories are already sanitized.
     #
     # The last field is the filename, all other fields are directories. Save
@@ -64,3 +61,5 @@ $NF~/[][)(><:, ''""]/ {
     printf sanitized_dirs
     printf sanitize(filename) " </dev/tty\n";
 }
+
+# vim: filetype=awk
