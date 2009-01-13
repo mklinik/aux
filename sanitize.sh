@@ -20,9 +20,7 @@
 # regexes in sync!
 #
 # Single and double quotes are included twice in the regexes
-# for not confusing vim syntax highlighting :(
-#
-# If the target file does already exist: do nothing.
+# for not confusing the vim syntax highlighting :(
 
 # replace all bad characters by underscores
 function sanitize(name)
@@ -57,8 +55,6 @@ $NF~/[][)(><:, ''""]/ {
     # print the directories sanitized and the filename unsanitized but escaped,
     # everything in quotes -- the original filename
     sanitized_dirs=sanitize($0);
-    # Problem: mv -i has to read from stdin which doesn't work. At least it
-    # doesn't overwrite existing files.
     printf "mv -i \"" sanitized_dirs
     # we're using double quotes to specify the original filename: escape all
     # double quotes in the original filename
