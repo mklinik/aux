@@ -66,5 +66,5 @@ $NF~/[][)(><:, ''""]/ {
 
     # print everything sanitized -- the target filename
     printf sanitized_dirs
-    printf sanitize(filename) "\n";
+    printf sanitize(filename) " </dev/tty\n";
 }
