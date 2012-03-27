@@ -22,7 +22,7 @@
 # replace all bad characters by underscores
 function sanitize(name)
 {
-    gsub(/[][)(><:, '"&}{~|@$%]/, "_", name);
+    gsub(/[^-a-zA-Z0-9_\/.]/, "_", name);
     return name;
 }
 
@@ -45,7 +45,7 @@ BEGIN {
 }
 
 # only process filenames containing bad characters
-$NF~/[][)(><:, '"&}{~|@$%]/ {
+$NF~/[^-a-zA-Z0-9_\/.]/ {
     # Assume that all directories are already sanitized.
     #
     # The last field is the filename, all other fields are directories. Save
