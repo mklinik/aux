@@ -85,6 +85,7 @@ case $AUDIO_FILE in
     eyeD3 --add-image=$IMAGE_FILE:OTHER $AUDIO_FILE
     ;;
 *.ogg)
+    echo processing $AUDIO_FILE
     (echo -n coverart=; base64 -w 0 $IMAGE_FILE; echo; echo coverartmime=image/jpeg) | vorbiscomment -a $AUDIO_FILE
     ;;
 **)
