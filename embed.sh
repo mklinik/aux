@@ -50,7 +50,7 @@
 
 function usage()
 {
-  echo "usage: $0 <audio-file> [image-file]"
+  echo "usage: $0 [image-file] <audio-file>"
   echo "if image-file is not given, default to cover.jpg"
 }
 
@@ -60,8 +60,8 @@ then
   IMAGE_FILE="cover.jpg"
 else if [ $# -eq 2 ]
 then
-  AUDIO_FILE=$1
-  IMAGE_FILE=$2
+  IMAGE_FILE=$1
+  AUDIO_FILE=$2
 else
   usage
   exit 1
