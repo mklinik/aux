@@ -35,6 +35,7 @@ function escape(name)
     gsub(/["]/, "\\\"", name);
     gsub(/[$]/, "\\$", name);
     gsub(/[%]/, "%%", name);
+    gsub(/[`]/, "\\\`", name);
     return name;
 }
 
