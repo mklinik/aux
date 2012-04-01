@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ -f $1 ]
+then
+  START_AT="--start-at $1 `dirname $1`"
+  shift
+fi
+
+feh -. --geometry 500x500 -B black -rSfilename $START_AT $@
