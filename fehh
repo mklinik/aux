@@ -6,4 +6,4 @@ then
   shift
 fi
 
-feh -. --geometry 500x500 -B black -rSfilename $START_AT $@
+feh -. --geometry 500x500 -B black -Sfilename $START_AT $@
