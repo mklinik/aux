@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ -f $1 ]
+if [ -f "$1" ]
 then
-  START_AT="--start-at $1 `dirname $1`"
+  START_AT=--start-at "$1" `dirname "$1"`
   shift
 fi
 
