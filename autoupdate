@@ -1,9 +1,21 @@
 #!/bin/bash
+
+if [ $# -lt 2 ]
+then
+  echo "usage: autoupdate <file> <command>"
+  echo "Waits until <file> changes, then runs <command> and waits again."
+  exit 1
+fi
+
 FILE=$1
-UPDATECMD=$2
+shift
+UPDATECMD=$@
+
+echo "updating $FILE using $UPDATECMD"
+
 while [ 1 ]
 do
   $UPDATECMD
-  sleep 0.1
+  sync # this is sometimes needed for some reason
   inotifywait -e move -e modify $FILE
 done
