@@ -2,7 +2,7 @@
 
 if [ $# -lt 2 ]
 then
-  echo "usage: autoupdate <file> <command>"
+  echo "usage: $0 <file> <command>"
   echo "Waits until <file> changes, then runs <command> and waits again."
   exit 1
 fi
