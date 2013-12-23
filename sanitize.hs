@@ -4,42 +4,52 @@ import System.FilePath ((</>), splitFileName)
 import System.Directory (renameFile, renameDirectory, doesFileExist, doesDirectoryExist, getDirectoryContents)
 import Data.List (isPrefixOf)
 import System.Environment (getArgs)
+import Control.Monad (unless)
+import Data.Functor ((<$>))
 
 data WhatsIt = IsFile | IsDirectory | IsOther
+  deriving (Eq)
 
 whatsIt :: FilePath -> IO WhatsIt
 whatsIt f = do
   isFile <- doesFileExist f
-  if isFile
-  then return IsFile
+  if isFile then return IsFile
   else do
     isDir <- doesDirectoryExist f
     if isDir then return IsDirectory
     else return IsOther
 
--- depth-first post-order directory tree traversal
+-- depth-first post-order directory traversal
 walk :: (FilePath -> IO ()) -> (FilePath -> IO ()) -> FilePath -> IO ()
-walk onFile onDirectory curName = do
-  it <- whatsIt curName
+walk onFile onDirectory file = do
+  it <- whatsIt file
   case it of
-    IsFile -> onFile curName
+    IsFile -> onFile file
     IsDirectory -> do
-      contents <- getDirectoryContents curName
-      mapM_ (walk onFile onDirectory) $ map (curName </>) $ filter (not . isPrefixOf ".") contents
-      onDirectory curName
+      contents <- getDirectoryContents file
+      mapM_ (walk onFile onDirectory) $ map (file </>) $ filter (not . isPrefixOf ".") contents
+      onDirectory file
     IsOther -> return ()
 
-processFileDryRun :: FilePath -> IO ()
-processFileDryRun f = putStrLn $ f ++ " -> " ++ sanitize f
+-- only process a file if the sanitized target doesn't already exist
+process :: (FilePath -> FilePath -> IO ()) -> FilePath -> IO ()
+process doIt file = do
+  targetExists <- (/=) IsOther <$> whatsIt newFile
+  unless targetExists (doIt file newFile)
+  where
+    newFile = sanitize file
 
 processFile :: FilePath -> IO ()
-processFile f = renameFile f (sanitize f)
+processFile f = process renameFile f
 
 processDir :: FilePath -> IO ()
-processDir f = renameDirectory f (sanitize f)
+processDir f = process renameDirectory f
 
-main =
-  getArgs >>= mapM_ (walk processFile processDir)
+dryRun :: FilePath -> FilePath -> IO ()
+dryRun file newFile = putStrLn $ file ++ " -> " ++ newFile
+
+processDryRun :: FilePath -> IO ()
+processDryRun f = process dryRun f
 
 -- Replace everything that is not a nice character in a filename by an underscore.
 --
@@ -52,5 +62,9 @@ sanitize f = path </> sanitizedFileName
 
 sanitizeOne :: Char -> Char
 sanitizeOne c
-  | c `elem` ['0' .. '9'] ++ ['a' .. 'z'] ++ ['A' .. 'Z'] ++ ".-_/" = c
+  | c `elem` ['0' .. '9'] ++ ['a' .. 'z'] ++ ['A' .. 'Z'] ++ ".-_" = c
   | otherwise = '_'
+
+main =
+  getArgs >>= mapM_ (walk processFile processDir)
+  -- getArgs >>= mapM_ (walk processDryRun processDryRun)
