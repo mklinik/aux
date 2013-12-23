@@ -5,20 +5,29 @@ import System.Directory (renameFile, renameDirectory, doesFileExist, doesDirecto
 import Data.List (isPrefixOf)
 import System.Environment (getArgs)
 
+data WhatsIt = IsFile | IsDirectory | IsOther
+
+whatsIt :: FilePath -> IO WhatsIt
+whatsIt f = do
+  isFile <- doesFileExist f
+  if isFile
+  then return IsFile
+  else do
+    isDir <- doesDirectoryExist f
+    if isDir then return IsDirectory
+    else return IsOther
+
 -- depth-first post-order directory tree traversal
 walk :: (FilePath -> IO ()) -> (FilePath -> IO ()) -> FilePath -> IO ()
 walk onFile onDirectory curName = do
-  isFile <- doesFileExist curName
-  if isFile
-  then onFile curName
-  else do
-    isDir <- doesDirectoryExist curName
-    if isDir
-    then do
+  it <- whatsIt curName
+  case it of
+    IsFile -> onFile curName
+    IsDirectory -> do
       contents <- getDirectoryContents curName
       mapM_ (walk onFile onDirectory) $ map (curName </>) $ filter (not . isPrefixOf ".") contents
       onDirectory curName
-    else return () -- neither a file nor a directory
+    IsOther -> return ()
 
 processFileDryRun :: FilePath -> IO ()
 processFileDryRun f = putStrLn $ f ++ " -> " ++ sanitize f
