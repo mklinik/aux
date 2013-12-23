@@ -6,6 +6,7 @@ import Data.List (isPrefixOf)
 import System.Environment (getArgs)
 import Control.Monad (unless)
 import Data.Functor ((<$>))
+import System.Console.GetOpt
 
 data WhatsIt = IsFile | IsDirectory | IsOther
   deriving (Eq)
@@ -31,7 +32,7 @@ walk onFile onDirectory file = do
       onDirectory file
     IsOther -> return ()
 
--- only process a file if the sanitized target doesn't already exist
+-- only process a file if the sanitized target does not already exist
 process :: (FilePath -> FilePath -> IO ()) -> FilePath -> IO ()
 process doIt file = do
   targetExists <- (/=) IsOther <$> whatsIt newFile
@@ -65,6 +66,29 @@ sanitizeOne c
   | c `elem` ['0' .. '9'] ++ ['a' .. 'z'] ++ ['A' .. 'Z'] ++ ".-_" = c
   | otherwise = '_'
 
-main =
-  getArgs >>= mapM_ (walk processFile processDir)
-  -- getArgs >>= mapM_ (walk processDryRun processDryRun)
+main = do
+  (o,files,_) <- getOpt Permute options <$> getArgs
+  let opts = foldl (flip id) defaultOptions o
+
+  if optHelp opts then printUsageInfo
+  else
+    if optDryRun opts then  mapM_ (walk processDryRun processDryRun) files
+    else mapM_ (walk processFile processDir) files
+
+data Options = Options
+  { optDryRun :: Bool
+  , optHelp :: Bool
+  }
+
+defaultOptions = Options { optDryRun = False, optHelp = False }
+
+options :: [OptDescr (Options -> Options)]
+options =
+  [ Option ['n'] ["dry-run"] (NoArg $ \o -> o { optDryRun = True }) "dont actually rename files"
+  , Option ['h'] ["help"] (NoArg $ \o -> o { optHelp = True }) "show usage information"
+  ]
+
+printUsageInfo :: IO ()
+printUsageInfo = putStrLn $ usageInfo header options
+  where
+    header = "usage: sanitize [OPTION...] files...\nRecursively sanitize filenames."
