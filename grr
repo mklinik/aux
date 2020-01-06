@@ -1,0 +1,14 @@
+#!/bin/bash
+
+FILE_EXTENSION=$1
+shift
+
+grep -nIr \
+    --exclude-dir=.git \
+    --exclude-dir=.svn \
+    --exclude-dir=CVS \
+    --exclude-dir="Clean System Files" \
+    --include=*.$FILE_EXTENSION\
+    --color=auto\
+    "$@" .
+
