@@ -70,7 +70,7 @@ main = do
   (o,files,_) <- getOpt Permute options <$> getArgs
   let opts = foldl (flip id) defaultOptions o
 
-  if optHelp opts then printUsageInfo
+  if optHelp opts || null files then printUsageInfo
   else
     if optDryRun opts then  mapM_ (walk processDryRun processDryRun) files
     else mapM_ (walk processFile processDir) files
