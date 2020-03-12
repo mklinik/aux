@@ -8,7 +8,7 @@ grep -nIr \
     --exclude-dir=.svn \
     --exclude-dir=CVS \
     --exclude-dir="Clean System Files" \
-    --include=*.$FILE_EXTENSION\
+    --include=*$FILE_EXTENSION\
     --color=auto\
     "$@" .
 
