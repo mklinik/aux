@@ -26,7 +26,7 @@ comparePage file1 file2 pageNr = do
     ]
     ""
   case exitCode of
-    ExitSuccess -> return ()
+    ExitSuccess ->   putStrLn $ "page " ++ show pageNr ++ " is identical"
     ExitFailure 2 -> putStrLn $ "error comparing page " ++ show pageNr
     ExitFailure n -> putStrLn $ "page " ++ show pageNr ++ " differs"
   where
