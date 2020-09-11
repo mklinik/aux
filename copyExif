@@ -1,0 +1,7 @@
+#!/bin/bash
+
+DIRNAME=`dirname "$1"`
+BASENAME=$(basename $(basename "$1" .CR2) .jpg)
+FROMFILE="$DIRNAME/$BASENAME.CR2"
+TOFILE="$DIRNAME/$BASENAME.jpg"
+exiftool -overwrite_original -TagsFromFile "$FROMFILE" -x Orientation "$TOFILE"
