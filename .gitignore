@@ -1,2 +1,5 @@
 *.swp
 sanitize_testcase
+aux.cabal
+.stack-work/
+stack.yaml.lock
