@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# takes the following arguments:
+# $1 : the test description
+# $2 : the actual result
+# $3 : the expected result
+function shouldBe()
+{
+if [ ! "$2" = "$3" ]
+then
+  echo "$1" failed.
+  echo " expected:" "$3"
+  echo "      got:" "$2"
+fi
+}
+
+# to use all scripts in the current directory
+export PATH=.:$PATH
+
+# -------| fromto |-------
+
+shouldBe "fromto renames a file"\
+  "`echo blah.mp3 | fromto s/mp3/ogg/`"\
+  "blah.mp3 blah.ogg"
+
+shouldBe "fromto renames a file, file extension only"\
+  "`echo mp3.mp3 | fromto s/mp3$/ogg/`"\
+  "mp3.mp3 mp3.ogg"
+
+
+# -------| proj |-------
+
+shouldBe "proj first of three"\
+  `echo a b c | proj 1`\
+  a
+
+shouldBe "proj second of three" \
+  `echo a b c | proj 2` \
+  b
+
+shouldBe "proj third of three" \
+  `echo a b c | proj 3` \
+  c
+
+# -------| max |-------
+
+shouldBe "maximum of 1 and 2" \
+  `max 1 2` \
+  2
+
+shouldBe "maximum of 4 and 2" \
+  `max 4 2` \
+  4
+
+shouldBe "maximum of a1 and a2" \
+  `max a1 a2` \
+  a2
+
+shouldBe "maximum of a100 and a2 (lexi order)" \
+  `max a100 a2` \
+  a2
+
+# -------| foldl |-------
+
+#shouldBe "foldl finds maximum" \
+  #`echo 1 2 3 | foldl max` \
+  #3
+
+# -------| take |-------
+#shouldBe "take first two elements of a list" \
+  #`echo -e "a\nb\nc"` \
+  #`echo -e "a\nb"`
+  
