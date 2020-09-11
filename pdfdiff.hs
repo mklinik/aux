@@ -51,16 +51,20 @@ numPdfPages fileName = do
 
 
 
+doCompare file1 file2 startPageNr = do
+  numPages1 <- numPdfPages file1
+  numPages2 <- numPdfPages file2
+  let numPages = minimum [numPages1, numPages2]
+  sequence_
+    [ comparePage file1 file2 pageNr
+    | pageNr <- [read startPageNr..(numPages - 1)]
+    ]
+
+
 main = do
   args <- getArgs
   case args of
-    [file1, file2, startPageNr] -> do
-      numPages1 <- numPdfPages file1
-      numPages2 <- numPdfPages file2
-      let numPages = minimum [numPages1, numPages2]
-      sequence_
-        [ comparePage file1 file2 pageNr
-        | pageNr <- [read startPageNr..(numPages - 1)]
-        ]
+    [file1, file2, startPageNr] -> doCompare file1 file2 startPageNr
+    [file1, file2] -> doCompare file1 file2 "0"
     _ -> do
-      putStrLn "usage: pdfdiff <file1> <file2> <startPageNr>"
+      putStrLn "usage: pdfdiff <file1> <file2> [startPageNr]"
